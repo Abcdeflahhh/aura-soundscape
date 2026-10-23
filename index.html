@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aura — Ambient Soundscape & Visualizer</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="./styles/main.css" />
+</head>
+<body class="relative flex flex-col justify-between p-4 md:p-8 select-none">
+
+  <!-- Interactive Canvas Background -->
+  <canvas id="sceneCanvas"></canvas>
+
+  <!-- Mouse Light Glow -->
+  <div id="mouseGlow" class="mouse-glow"></div>
+
+  <!-- Top Header Bar -->
+  <header class="relative z-10 flex flex-wrap items-center justify-between gap-4 glass-panel px-6 py-4">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-400 via-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-sky-500/20">
+        <i data-lucide="headphones" class="w-5 h-5 text-white"></i>
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-wider text-white flex items-center gap-2">
+          AURA <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">CHILL SPACE</span>
+        </h1>
+        <p class="text-xs text-slate-400">Generative Ambient Sound & Visualizer</p>
+      </div>
+    </div>
+
+    <!-- Quick Visual Theme Selector -->
+    <div class="flex items-center gap-1.5 p-1 rounded-full glass-subtle">
+      <button data-theme-select="rain" class="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all text-white bg-white/20" title="Rain Theme">
+        <i data-lucide="cloud-rain" class="w-3.5 h-3.5"></i>
+        <span class="hidden sm:inline">Rain</span>
+      </button>
+      <button data-theme-select="fire" class="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all text-slate-400 hover:text-white" title="Campfire Theme">
+        <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+        <span class="hidden sm:inline">Fire</span>
+      </button>
+      <button data-theme-select="cosmos" class="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all text-slate-400 hover:text-white" title="Cosmos Theme">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span class="hidden sm:inline">Cosmos</span>
+      </button>
+      <button data-theme-select="ocean" class="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all text-slate-400 hover:text-white" title="Ocean Theme">
+        <i data-lucide="waves" class="w-3.5 h-3.5"></i>
+        <span class="hidden sm:inline">Ocean</span>
+      </button>
+    </div>
+
+    <!-- Quick Action: Thunder Flash & Save Mix -->
+    <div class="flex items-center gap-2">
+      <button id="lightningBtn" class="p-2 rounded-xl glass-subtle text-amber-300 hover:bg-amber-400/20 hover:scale-105 active:scale-95 transition-all" title="Trigger Lightning & Thunder">
+        <i data-lucide="zap" class="w-4 h-4"></i>
+      </button>
+      <button id="saveMixBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl glass-subtle text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+        <i data-lucide="bookmark-plus" class="w-4 h-4"></i>
+        <span>Save Mix</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Presets Carousel / Pill Bar -->
+  <div class="relative z-10 my-4 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none" id="presetContainer">
+    <!-- Rendered dynamically by main.js -->
+  </div>
+
+  <!-- Main Grid Content -->
+  <main class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto overflow-y-auto max-h-[72vh] pr-1">
+    
+    <!-- Left Column: Ambient Sound Generator Rack (7 Cols) -->
+    <section class="lg:col-span-7 glass-panel p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-2">
+            <i data-lucide="sliders" class="w-4 h-4 text-sky-400"></i>
+            <h2 class="text-sm font-semibold tracking-wider text-slate-200 uppercase">Sound Synthesizer</h2>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">Web Audio API • Procedural DSP</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <!-- Rain Track -->
+          <div class="p-4 rounded-xl glass-subtle flex flex-col gap-3 hover:bg-white/[0.04] transition-all">
+            <div class="flex items-center justify-between text-sm">
+              <span class="flex items-center gap-2 text-slate-300 font-medium">
+                <i data-lucide="cloud-rain" class="w-4 h-4 text-sky-400"></i> Rainfall
+              </span>
+              <span class="text-xs font-mono text-sky-400 val-rain">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" data-sound="rain" />
+          </div>
+
+          <!-- Campfire Track -->
+          <div class="p-4 rounded-xl glass-subtle flex flex-col gap-3 hover:bg-white/[0.04] transition-all">
+            <div class="flex items-center justify-between text-sm">
+              <span class="flex items-center gap-2 text-slate-300 font-medium">
+                <i data-lucide="flame" class="w-4 h-4 text-amber-500"></i> Campfire
+              </span>
+              <span class="text-xs font-mono text-amber-400 val-campfire">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" data-sound="campfire" />
+          </div>
+
+          <!-- Ocean Waves Track -->
+          <div class="p-4 rounded-xl glass-subtle flex flex-col gap-3 hover:bg-white/[0.04] transition-all">
+            <div class="flex items-center justify-between text-sm">
+              <span class="flex items-center gap-2 text-slate-300 font-medium">
+                <i data-lucide="waves" class="w-4 h-4 text-cyan-400"></i> Ocean Waves
+              </span>
+              <span class="text-xs font-mono text-cyan-400 val-ocean">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" data-sound="ocean" />
+          </div>
+
+          <!-- Breeze / Wind Track -->
+          <div class="p-4 rounded-xl glass-subtle flex flex-col gap-3 hover:bg-white/[0.04] transition-all">
+            <div class="flex items-center justify-between text-sm">
+              <span class="flex items-center gap-2 text-slate-300 font-medium">
+                <i data-lucide="wind" class="w-4 h-4 text-emerald-400"></i> Wind Breeze
+              </span>
+              <span class="text-xs font-mono text-emerald-400 val-wind">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" data-sound="wind" />
+          </div>
+
+          <!-- 432Hz Drone Track -->
+          <div class="p-4 rounded-xl glass-subtle flex flex-col gap-3 hover:bg-white/[0.04] transition-all">
+            <div class="flex items-center justify-between text-sm">
+              <span class="flex items-center gap-2 text-slate-300 font-medium">
+                <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i> 432Hz Drone
+              </span>
+              <span class="text-xs font-mono text-purple-400 val-drone">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" data-sound="drone" />
+          </div>
+
+          <!-- Night Crickets Track -->
+          <div class="p-4 rounded-xl glass-subtle flex flex-col gap-3 hover:bg-white/[0.04] transition-all">
+            <div class="flex items-center justify-between text-sm">
+              <span class="flex items-center gap-2 text-slate-300 font-medium">
+                <i data-lucide="moon" class="w-4 h-4 text-indigo-400"></i> Night Crickets
+              </span>
+              <span class="text-xs font-mono text-indigo-400 val-crickets">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" data-sound="crickets" />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Live Spectrum Visualizer Container inside Rack -->
+      <div class="mt-6 pt-4 border-t border-white/5">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+          <span>Real-time Audio Spectrum</span>
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Audio Analyser</span>
+        </div>
+        <div class="h-16 w-full rounded-xl overflow-hidden glass-subtle flex items-center justify-center p-2">
+          <canvas id="visualizerCanvas" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Focus & Mindfulness Widgets (5 Cols) -->
+    <section class="lg:col-span-5 flex flex-col gap-4">
+      
+      <!-- Pomodoro Focus Timer -->
+      <div class="glass-panel p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="clock" class="w-4 h-4 text-indigo-400"></i>
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Focus Session</span>
+          </div>
+          <span id="timerModeLabel" class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-medium border border-indigo-500/30">
+            Deep Work
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between mt-2">
+          <div id="timerDisplay" class="text-4xl font-mono font-bold tracking-tight text-white">
+            25:00
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="timerToggleBtn" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-medium text-xs shadow-lg shadow-indigo-500/25 hover:opacity-95 active:scale-95 transition-all">
+              <i data-lucide="play" class="w-4 h-4"></i>
+              <span>Focus</span>
+            </button>
+            <button id="timerResetBtn" class="p-2 rounded-xl glass-subtle text-slate-400 hover:text-white transition-all" title="Reset Timer">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zen Breathing Guide Widget -->
+      <div class="glass-panel p-5 flex flex-col items-center justify-center relative overflow-hidden">
+        <div class="w-full flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <i data-lucide="heart" class="w-4 h-4 text-rose-400"></i>
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Zen Breath Guide</span>
+          </div>
+          <button id="breathToggleBtn" class="text-xs px-3 py-1 rounded-full glass-subtle text-slate-300 hover:text-white transition-all">
+            Toggle
+          </button>
+        </div>
+
+        <!-- Animated Breathing Ring -->
+        <div class="my-4 flex items-center justify-center relative">
+          <div id="breathCircle" class="w-24 h-24 rounded-full border-2 border-white/20 flex items-center justify-center transition-all duration-1000 ease-in-out">
+            <span id="breathText" class="text-xs font-medium text-slate-200 text-center px-2">Breath Sync</span>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400 text-center">4-7-8 Respiratory flow for creative clarity & flow state.</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Bottom Floating Master Controls Bar -->
+  <footer class="relative z-10 flex items-center justify-between gap-4 glass-panel px-6 py-3 mt-4">
+    <div class="flex items-center gap-3">
+      <button id="muteBtn" class="p-2.5 rounded-xl glass-subtle text-slate-200 hover:text-white hover:bg-white/10 transition-all" title="Mute/Unmute Audio">
+        <i id="muteIcon" data-lucide="volume-2" class="w-4 h-4"></i>
+      </button>
+      <div class="hidden sm:flex items-center gap-2 w-32 md:w-44">
+        <input type="range" id="masterVolume" min="0" max="100" value="80" title="Master Volume" />
+      </div>
+    </div>
+
+    <div class="text-xs text-slate-400 flex items-center gap-2">
+      <span class="hidden md:inline">Crafted for Design Engineers & Creative Vibe Coders</span>
+      <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-slate-300">Aura v1.0</span>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript Module -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
