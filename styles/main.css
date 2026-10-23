@@ -168,3 +168,47 @@ input[type="range"]::-moz-range-thumb:hover {
 .animate-pulse-subtle {
   animation: pulseSubtle 3s infinite ease-in-out;
 }
+
+/* Zen Fullscreen Mode */
+body.zen-active header,
+body.zen-active main,
+body.zen-active footer,
+body.zen-active #presetContainer {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.98);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s ease;
+}
+
+header, main, footer, #presetContainer {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+#zenExitBar {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Preset Delete Button */
+.preset-delete-btn {
+  margin-left: 4px;
+  padding: 2px;
+  border-radius: 9999px;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+}
+
+.preset-delete-btn:hover {
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.15);
+}
+
+/* Shortcut Modal Backdrop */
+#shortcutModal.active {
+  display: flex !important;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}

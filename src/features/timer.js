@@ -117,3 +117,47 @@ export class BreathingGuide {
     return this.isRunning;
   }
 }
+
+export class SleepTimer {
+  constructor(onTick, onEnd) {
+    this.remainingSec = 0;
+    this.timerId = null;
+    this.onTick = onTick; // (formattedText, remainingSeconds)
+    this.onEnd = onEnd; // ()
+    this.isRunning = false;
+  }
+
+  setTimer(minutes) {
+    this.cancel();
+    if (!minutes || minutes <= 0) return;
+    this.remainingSec = minutes * 60;
+    this.isRunning = true;
+    if (this.onTick) this.onTick(this.formatTime(), this.remainingSec);
+
+    this.timerId = setInterval(() => {
+      this.remainingSec--;
+      if (this.remainingSec <= 0) {
+        this.cancel();
+        if (this.onEnd) this.onEnd();
+      } else {
+        if (this.onTick) this.onTick(this.formatTime(), this.remainingSec);
+      }
+    }, 1000);
+  }
+
+  cancel() {
+    this.isRunning = false;
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
+    this.remainingSec = 0;
+    if (this.onTick) this.onTick('', 0);
+  }
+
+  formatTime() {
+    const mins = Math.floor(this.remainingSec / 60);
+    const secs = this.remainingSec % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+}

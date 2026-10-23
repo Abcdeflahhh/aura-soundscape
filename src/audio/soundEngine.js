@@ -9,6 +9,7 @@ class SoundEngine {
     this.masterGain = null;
     this.analyser = null;
     this.isMuted = false;
+    this.isPlaying = true;
     this.previousMasterVolume = 0.8;
     this.sounds = {};
     this.isInitialized = false;
@@ -294,6 +295,41 @@ class SoundEngine {
     const targetGain = this.isMuted ? 0 : this.previousMasterVolume;
     this.masterGain.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.05);
     return this.isMuted;
+  }
+
+  togglePlay() {
+    this.ensureContext();
+    if (!this.ctx) return false;
+    if (this.ctx.state === 'running') {
+      this.ctx.suspend();
+      this.isPlaying = false;
+    } else {
+      this.ctx.resume();
+      this.isPlaying = true;
+    }
+    return this.isPlaying;
+  }
+
+  play() {
+    this.ensureContext();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    this.isPlaying = true;
+  }
+
+  pause() {
+    if (this.ctx && this.ctx.state === 'running') {
+      this.ctx.suspend();
+    }
+    this.isPlaying = false;
+  }
+
+  fadeMaster(targetValue, durationSec = 3) {
+    if (!this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+    this.masterGain.gain.linearRampToValueAtTime(targetValue, now + durationSec);
   }
 
   triggerThunder() {

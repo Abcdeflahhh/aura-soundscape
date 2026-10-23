@@ -53,11 +53,35 @@
       </button>
     </div>
 
-    <!-- Quick Action: Thunder Flash & Save Mix -->
+    <!-- Quick Action: Sleep Timer, Lightning, Zen Mode, Shortcuts, Save Mix -->
     <div class="flex items-center gap-2">
-      <button id="lightningBtn" class="p-2 rounded-xl glass-subtle text-amber-300 hover:bg-amber-400/20 hover:scale-105 active:scale-95 transition-all" title="Trigger Lightning & Thunder">
+      <!-- Sleep Timer Dropdown -->
+      <div class="relative">
+        <button id="sleepTimerBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-subtle text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-all" title="Sleep Timer">
+          <i data-lucide="timer" class="w-3.5 h-3.5 text-indigo-400"></i>
+          <span id="sleepTimerLabel" class="font-medium">Sleep Timer</span>
+        </button>
+        <div id="sleepTimerMenu" class="hidden absolute right-0 mt-2 w-36 rounded-xl glass-panel p-1.5 shadow-2xl z-50 flex flex-col gap-1 text-xs border border-white/10">
+          <button class="sleep-opt text-left px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 transition-all" data-mins="0">Off (Continuous)</button>
+          <button class="sleep-opt text-left px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 transition-all" data-mins="15">15 Minutes</button>
+          <button class="sleep-opt text-left px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 transition-all" data-mins="30">30 Minutes</button>
+          <button class="sleep-opt text-left px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 transition-all" data-mins="45">45 Minutes</button>
+          <button class="sleep-opt text-left px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 transition-all" data-mins="60">60 Minutes</button>
+        </div>
+      </div>
+
+      <button id="lightningBtn" class="p-2 rounded-xl glass-subtle text-amber-300 hover:bg-amber-400/20 hover:scale-105 active:scale-95 transition-all" title="Trigger Lightning & Thunder (T)">
         <i data-lucide="zap" class="w-4 h-4"></i>
       </button>
+
+      <button id="zenModeBtn" class="p-2 rounded-xl glass-subtle text-sky-300 hover:bg-sky-400/20 hover:scale-105 active:scale-95 transition-all" title="Zen Fullscreen Mode (F)">
+        <i id="zenIcon" data-lucide="maximize-2" class="w-4 h-4"></i>
+      </button>
+
+      <button id="shortcutBtn" class="p-2 rounded-xl glass-subtle text-slate-400 hover:text-white hover:bg-white/10 transition-all" title="Keyboard Shortcuts (?)">
+        <i data-lucide="help-circle" class="w-4 h-4"></i>
+      </button>
+
       <button id="saveMixBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl glass-subtle text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-all">
         <i data-lucide="bookmark-plus" class="w-4 h-4"></i>
         <span>Save Mix</span>
@@ -226,19 +250,77 @@
   <!-- Bottom Floating Master Controls Bar -->
   <footer class="relative z-10 flex items-center justify-between gap-4 glass-panel px-6 py-3 mt-4">
     <div class="flex items-center gap-3">
-      <button id="muteBtn" class="p-2.5 rounded-xl glass-subtle text-slate-200 hover:text-white hover:bg-white/10 transition-all" title="Mute/Unmute Audio">
+      <!-- Master Play / Pause Button -->
+      <button id="masterPlayBtn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white text-xs font-semibold shadow-lg shadow-sky-500/20 hover:brightness-110 active:scale-95 transition-all" title="Toggle Soundscape (Space)">
+        <i id="masterPlayIcon" data-lucide="pause" class="w-4 h-4"></i>
+        <span id="masterPlayText">Playing</span>
+      </button>
+
+      <button id="muteBtn" class="p-2.5 rounded-xl glass-subtle text-slate-200 hover:text-white hover:bg-white/10 transition-all" title="Mute/Unmute Audio (M)">
         <i id="muteIcon" data-lucide="volume-2" class="w-4 h-4"></i>
       </button>
-      <div class="hidden sm:flex items-center gap-2 w-32 md:w-44">
+      <div class="hidden sm:flex items-center gap-2 w-28 md:w-40">
         <input type="range" id="masterVolume" min="0" max="100" value="80" title="Master Volume" />
       </div>
     </div>
 
     <div class="text-xs text-slate-400 flex items-center gap-2">
       <span class="hidden md:inline">Crafted for Design Engineers & Creative Vibe Coders</span>
-      <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-slate-300">Aura v1.0</span>
+      <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-slate-300">Aura v1.1</span>
     </div>
   </footer>
+
+  <!-- Zen Mode Floating Top Exit Bar -->
+  <div id="zenExitBar" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full glass-panel flex items-center gap-3 text-xs text-slate-300 opacity-0 pointer-events-none transition-all duration-300 shadow-2xl">
+    <span class="flex items-center gap-2 font-medium">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Zen Ambient Mode Active
+    </span>
+    <span class="text-slate-500">•</span>
+    <button id="exitZenBtn" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium transition-all">
+      Exit Zen (F)
+    </button>
+  </div>
+
+  <!-- Keyboard Shortcuts Modal -->
+  <div id="shortcutModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-panel p-6 max-w-sm w-full relative">
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <i data-lucide="command" class="w-4 h-4 text-sky-400"></i>
+          <h3 class="text-sm font-semibold text-white">Keyboard Shortcuts</h3>
+        </div>
+        <button id="closeShortcutBtn" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-all">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="flex flex-col gap-2.5 text-xs">
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Play / Pause Master</span>
+          <kbd class="px-2 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[11px] text-white">Space</kbd>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Mute / Unmute</span>
+          <kbd class="px-2 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[11px] text-white">M</kbd>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Zen Fullscreen Mode</span>
+          <kbd class="px-2 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[11px] text-white">F</kbd>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Trigger Lightning</span>
+          <kbd class="px-2 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[11px] text-white">T</kbd>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Switch Themes (1 - 4)</span>
+          <kbd class="px-2 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[11px] text-white">1 - 4</kbd>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Shortcuts Guide</span>
+          <kbd class="px-2 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[11px] text-white">?</kbd>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Main JavaScript Module -->
   <script type="module" src="./src/main.js"></script>

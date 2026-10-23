@@ -20,7 +20,10 @@
 - ⏱️ **Integrated Focus & Mindfulness Toolkit:**
   - **Pomodoro Timer:** 25-minute deep work / 5-minute break cycles.
   - **Zen 4-7-8 Breathing Guide:** Expanding holographic rhythm circle (Inhale, Hold, Exhale).
-- 💾 **Custom Mix Presets:** Curated soundscapes ("Midnight Rain", "Cozy Cabin", "Cosmic Zen") plus ability to save your custom mix directly to `localStorage`.
+  - **Sleep Timer:** Auto fade-out & stop after 15, 30, 45, or 60 minutes.
+- 💾 **Custom Mix Presets & Storage:** Curated soundscapes ("Midnight Rain", "Cozy Cabin", "Cosmic Zen", etc.) with full custom mix management (save, load, and delete your personal soundscapes in `localStorage`).
+- 🖥️ **Zen Fullscreen Mode:** Distraction-free ambient immersion with auto-revealing controls.
+- ⌨️ **Intuitive Keyboard Hotkeys:** `Space` (Play/Pause), `M` (Mute), `F` (Zen Mode), `T` (Thunder), `1-4` (Themes), `?` (Shortcuts Guide).
 - 🪄 **Modern Design Engineering UI:**
   - Frosted glassmorphism (`backdrop-blur-20px`).
   - Interactive cursor radial light glow.
